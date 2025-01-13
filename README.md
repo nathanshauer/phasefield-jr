@@ -1,7 +1,10 @@
 # phasefield-jr
-##### A simple one file C++ project to run 2D phase field problems with linear quadrilaterals
+#### A simple one file C++ project to run 2D phase field problems with linear quadrilaterals
 
 The phase field method is a powerful tool for fracture analysis. However, it introduces certain challenges that are not encountered in traditional finite element analysis. With this in mind, this code was developed for educational purposes, providing a single-file implementation to help researchers familiarize themselves with the fundamentals of phase field analysis. It also serves as a reference for verifying their own code.
+
+For more information about me or to get in touch, please visit my website:
+[www.nathanshauer.com](http://www.nathanshauer.com)
 
 ## Configuration
 
@@ -21,7 +24,7 @@ On macOS, you can use Homebrew:
 sudo brew install eigen
 ```
 
-Or macports
+Or macports:
 
 ```sh
 sudo port install eigen3
@@ -98,3 +101,25 @@ To visualize the output in ParaView using VTK files, follow these steps:
   - Click `Apply` to load the data.
 
 5. **Visualize the data**: Use the various visualization tools in ParaView to explore the simulation results. You can adjust the display properties, apply filters, and create animations to better understand the phase field analysis.
+
+## Quantitative analysis using Mathematica notebooks
+
+The project includes two Mathematica notebooks for quantitative analysis of the simulation results:
+
+1. **Notebook 1: Analysis of Bar under Tension**
+  - This notebook analyzes the results from the `example1` simulation.
+  - Open the notebook `example1_timexsigma.nb` using Wolfram Mathematica
+  - Follow the instructions within the notebook to import the data from the txt file and perform the analysis.
+  - This notebook presents the plot of `sigma/sigma_peak x time`, where `sigma_peak` is calculated analytically
+
+2. **Notebook 2: Analysis of Single-edge Notch Plate under Tension**
+  - This notebook analyzes the results from the `example2` simulation.
+  - Open the notebook `example2_pdelta.nb` using Wolfram Mathematica
+  - Follow the instructions within the notebook to import the data from the txt file and perform the analysis.
+  - This notebook presents the plot `Reaction force x imposed displacement`
+
+To execute the notebooks:
+
+1. Open the desired notebook (`example1_timexsigma.nb` or `example2_pdelta.nb`).
+2. Execute each cell using `shift+enter`. You can also execute all cells by pressing `cmd+a` (`ctrl+a` in linux/windows) followed by `shift+enter`
+
