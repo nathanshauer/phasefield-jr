@@ -1,2 +1,100 @@
 # phasefield-jr
-A simple C++ project to run phase field problems
+##### A simple one file C++ project to run 2D phase field problems with linear quadrilaterals
+
+The phase field method is a powerful tool for fracture analysis. However, it introduces certain challenges that are not encountered in traditional finite element analysis. With this in mind, this code was developed for educational purposes, providing a single-file implementation to help researchers familiarize themselves with the fundamentals of phase field analysis. It also serves as a reference for verifying their own code.
+
+## Configuration
+
+The code has been tested on macOS and Ubuntu. For Windows users, it is recommended to use Windows Subsystem for Linux (WSL) to ensure compatibility.
+
+### Downloading Eigen3
+
+The only dependency of the project is Eigen3, which is used for most linear algebra tasks in the implementation. You can download Eigen3 from its official website or use a package manager to install it. For example, on Ubuntu, you can install it using:
+
+```sh
+sudo apt-get install libeigen3-dev
+```
+
+On macOS, you can use Homebrew:
+
+```sh
+sudo brew install eigen
+```
+
+Or macports
+
+```sh
+sudo port install eigen3
+```
+
+Alternatively, you can download the source code from the [Eigen3 official website](https://eigen.tuxfamily.org/dox/GettingStarted.html) and follow the instructions to install it manually.
+
+### Bulding on terminal
+
+To configure the project using CMake, follow these steps:
+
+1. Ensure you have CMake installed on your system.
+2. Open a terminal and navigate to the project directory:
+  ```sh
+  cd /Users/MyName/phasefield-jr
+  ```
+3. Create a build directory and navigate into it:
+  ```sh
+  mkdir build
+  cd build
+  ```
+4. Run CMake to configure the project:
+  ```sh
+  cmake ..
+  ```
+5. Build the project:
+  ```sh
+  make
+  ```
+
+### Building on VSCode with CMake Tools
+
+To build the project using Visual Studio Code with the CMake Tools extension, follow these steps:
+
+1. Install Visual Studio Code from the [official website](https://code.visualstudio.com/).
+2. Install the CMake Tools extension from the VSCode marketplace.
+3. Open the project folder in VSCode:
+  ```sh
+  code /Users/MyName/phasefield-jr
+  ```
+4. Open the Command Palette (Ctrl+Shift+P) and select `CMake: Configure`.
+5. Choose the appropriate kit for your system (e.g., GCC, Clang).
+6. Once the configuration is complete, open the Command Palette again and select `CMake: Build`.
+
+## Running the examples
+
+There are two examples in the project:
+
+1. **Example 1: Bar under tension**
+  - To run this example, execute the following command in the terminal:
+    ```sh
+    ./build/example1
+    ```
+
+2. **Example 2: Single-edge notch plate under tension**
+  - To run this example, execute the following command in the terminal:
+    ```sh
+    ./build/example2
+    ```
+
+## Output in Paraview using vtk files
+To visualize the output in ParaView using VTK files, follow these steps:
+
+1. **Generate VTK files**: After running the examples, VTK files will be generated in the `output` directory. These files contain the simulation results and can be visualized using ParaView.
+
+2. **Install ParaView**: If you don't have ParaView installed, you can download it from the [official website](https://www.paraview.org/download/).
+
+3. **Open ParaView**: Launch ParaView on your system.
+
+4. **Load VTK files**:
+  - Click on `File` > `Open`.
+  - Navigate to the `output` directory of the project.
+  - Select the VTK file you want to visualize (e.g., `example1.vtk` or `example2.vtk`).
+  - Click `Apply` to load the data.
+
+5. **Visualize the data**: Use the various visualization tools in ParaView to explore the simulation results. You can adjust the display properties, apply filters, and create animations to better understand the phase field analysis.
