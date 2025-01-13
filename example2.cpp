@@ -3,6 +3,8 @@ MIT License
 
 © 2023 Nathan Shauer
 
+phasefield-jr
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -269,7 +271,7 @@ void createGradedMesh(std::vector<Node> &nodes, std::vector<Element> &elements, 
 
   for (int j = 0; j <= num_elements_y; ++j) {
     for (int i = 0; i <= num_elements_x; ++i) {
-      double x = -0.5 + i * 1.0 / num_elements_x;
+      double x = -0.5 + i * length / num_elements_x;
       double y;
       if (j <= num_elements_y_small) {
         y = j * ysize;

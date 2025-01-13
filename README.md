@@ -3,6 +3,9 @@
 
 The phase field method is a powerful tool for fracture analysis. However, it introduces certain challenges that are not encountered in traditional finite element analysis. With this in mind, this code was developed for educational purposes, providing a single-file implementation to help researchers familiarize themselves with the fundamentals of phase field analysis. It also serves as a reference for verifying their own code.
 
+Check out the sister code in Python on:
+[https://github.com/nathanshauer/phasefield-jr-py](https://github.com/nathanshauer/phasefield-jr-py)
+
 For more information about me or to get in touch, please visit my website:
 [www.nathanshauer.com](http://www.nathanshauer.com)
 
