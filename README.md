@@ -100,7 +100,7 @@ To visualize the output in ParaView using VTK files, follow these steps:
 4. **Load VTK files**:
   - Click on `File` > `Open`.
   - Navigate to the `output` directory of the project.
-  - Select the VTK file you want to visualize (e.g., `example1.vtk` or `example2.vtk`).
+  - Select the VTK file you want to visualize (e.g., `output_ex1_#.vtk` or `output_ex2_#.vtk`).
   - Click `Apply` to load the data.
 
 5. **Visualize the data**: Use the various visualization tools in ParaView to explore the simulation results. You can adjust the display properties, apply filters, and create animations to better understand the phase field analysis.
