@@ -95,8 +95,7 @@ std::vector<QuadraturePoint> intrule = create2x2QuadratureRule(); // Adopting 2x
 // ===============================================================================
 
 void createRectangularMesh(std::vector<Node> &nodes, std::vector<Element> &elements, int num_elements_x, int num_elements_y, double length, double height);
-void createGradedMesh(std::vector<Node> &nodes, std::vector<Element> &elements, int num_elements_x, int num_elements_y, double length, double height);
-void imposeInitialCrack(std::vector<Node> &nodes, double l);
+void createDoubleNodeMesh(std::vector<Node> &nodes, std::vector<Element> &elements, int num_elements_x, int num_elements_y, double length, double height);
 void assembleGlobalStiffness(MatrixXd &K, VectorXd& F, const std::vector<Element> &elements, const std::vector<Node> &nodes, MaterialParameters& material, int nstate);
 void computeElementStiffness(MatrixXd &Ke, VectorXd& Fe, const std::vector<Node> &nodes, const Element &element, MaterialParameters& material, const int nstate);
 void shapeFunctions(MatrixXd &N, MatrixXd &dN, const double qsi, const double eta, const int nstate);
@@ -124,7 +123,7 @@ int main() {
   double l = 0.005; // Length scale parameter
 
   // Define mesh and time step parameters
-  int num_elements_x = 50;
+  int num_elements_x = 60;
   int num_elements_y = 30; // has to be even number
   double length = 1.;
   double height = 1.;
@@ -151,9 +150,7 @@ int main() {
   D(1, 1) = factor;
   D(2, 2) = factor * (1 - nu) / 2.0;  
 
-
-  // Create a grade mesh that is more refined at the crack region
-  createGradedMesh(nodes, elements, num_elements_x, num_elements_y, length, height);
+  createDoubleNodeMesh(nodes, elements, num_elements_x, num_elements_y, length, height);
 
   // Create boundary conditions  
   bool firstnode = true;
@@ -189,7 +186,6 @@ int main() {
     for(iter = 0 ; iter < maxiter ; iter++){
       std::cout << "------ Staggered Iteration " << iter << " ------" << std::endl;
       // Solve elasticity problem
-      imposeInitialCrack(nodes,l);
       assembleGlobalStiffness(Kelas, Felas, elements, nodes, material, nstate_elas);
       applyBoundaryConditions(Kelas, Felas, bc_nodes);
       double norm;
@@ -227,7 +223,6 @@ int main() {
 
 // =============================== FUNCTION IMPLEMENTATIONS ======================
 // ===============================================================================
-
 void createRectangularMesh(std::vector<Node> &nodes, std::vector<Element> &elements, int num_elements_x, int num_elements_y, double length, double height) {
   // Generate nodes
   for (int j = 0; j <= num_elements_y; ++j) {
@@ -235,12 +230,6 @@ void createRectangularMesh(std::vector<Node> &nodes, std::vector<Element> &eleme
       nodes.push_back({-0.5 + i * length / num_elements_x, -0.5 + j * height / num_elements_y});
     }
   }
-
-  // Print the nodes
-  // std::cout << "Nodes:" << std::endl;
-  // for (const auto &node : nodes) {
-  //   std::cout << "(" << node.x << ", " << node.y << ")" << std::endl;
-  // }  
 
   // Generate elements
   for (int j = 0; j < num_elements_y; ++j) {
@@ -250,35 +239,36 @@ void createRectangularMesh(std::vector<Node> &nodes, std::vector<Element> &eleme
       int n3 = n1 + num_elements_x + 1;
       int n4 = n3 + 1;
       elements.push_back({{n1, n2, n4, n3}});
-      // Print the coordinates of each node in the element
-      // std::cout << "Element nodes: ";
-      // for (int node_id : elements.back().node_ids) {
-      //   std::cout << "(" << nodes[node_id].x << ", " << nodes[node_id].y << ") ";
-      // }
-      // std::cout << std::endl;
     }
   }
 }
 
-void createGradedMesh(std::vector<Node> &nodes, std::vector<Element> &elements, int num_elements_x, int num_elements_y, double length, double height) {
-
-  double ysize = 0.001;
+void createDoubleNodeMesh(std::vector<Node> &nodes, std::vector<Element> &elements, int num_elements_x, int num_elements_y, double length, double height) {
+  double xsize = 0.001, ysize = 0.001;
   num_elements_y /= 2;
-  int num_elements_y_small = 8;
+  int num_elements_x_small = 8, num_elements_y_small = 8;
   int num_elements_y_large = num_elements_y - num_elements_y_small;
+  int num_elements_x_large = num_elements_x - num_elements_x_small;
   double y_small = ysize * num_elements_y_small;
-  double y_large = (height/2 - y_small) / num_elements_y_large;
+  double y_largeel_size = (height/2 - y_small) / num_elements_y_large;
+  double x_small = xsize * num_elements_x_small;
+  double x_largeel_size = (length - x_small) / num_elements_x_large;
 
   for (int j = 0; j <= num_elements_y; ++j) {
+    double xnow = -0.5;
     for (int i = 0; i <= num_elements_x; ++i) {
-      double x = -0.5 + i * length / num_elements_x;
       double y;
       if (j <= num_elements_y_small) {
         y = j * ysize;
       } else {
-        y = y_small + (j - num_elements_y_small) * y_large;
+        y = y_small + (j - num_elements_y_small) * y_largeel_size;
       }
-      nodes.push_back({x, y});
+      nodes.push_back({xnow, y});
+      if (i < num_elements_x_large / 2 || i > num_elements_x_large / 2 + num_elements_x_small - 1) {
+        xnow += x_largeel_size;
+      } else {
+        xnow += xsize;
+      }
     }
   }
 
@@ -304,7 +294,13 @@ void createGradedMesh(std::vector<Node> &nodes, std::vector<Element> &elements, 
       node_map[i] = nodes.size();
       nodes.push_back(mirrored_node);
     } else {
-      node_map[i] = i;
+      if (nodes[i].x < -1.e-8) { // nodes until the tip
+        Node duplicated_node = {nodes[i].x, nodes[i].y};
+        node_map[i] = nodes.size();
+        nodes.push_back(duplicated_node);
+      } else {
+        node_map[i] = i;
+      }
     }
   }
 
@@ -320,19 +316,7 @@ void createGradedMesh(std::vector<Node> &nodes, std::vector<Element> &elements, 
   }
 }
 
-void imposeInitialCrack(std::vector<Node> &nodes, double l) {
-  double crackbound = l + l/3.;
-  double xbound = 0. + l;
-  for (int i = 0; i < nodes.size(); ++i) {
-    if (fabs(nodes[i].y) < crackbound && nodes[i].x < xbound) {
-      double distance = fabs(nodes[i].y);
-      Upf[i] = 1.0 - (distance / (l+l/3)) * (distance / (l+l/3));
-    }
-  }
-}
-
 void assembleGlobalStiffness(MatrixXd &K, VectorXd& F, const std::vector<Element> &elements, const std::vector<Node> &nodes, MaterialParameters& mat, int nstate) {
-
   Timer time;
 
   K.setZero();
@@ -433,10 +417,6 @@ void computeElementStiffness(MatrixXd &Ke, VectorXd& Fe, const std::vector<Node>
   else {
     throw std::bad_exception();
   }
-
-  // Print the element stiffness matrix Ke
-  // std::cout << "Element stiffness matrix Ke: \n"
-  //           << Ke << std::endl;
 }
 
 double calculateSigmaDotEps(const Element &element, const MatrixXd &dN, MaterialParameters& mat) {
@@ -670,7 +650,6 @@ void generateVTKLegacyFile(const std::vector<Node> &nodes, const std::vector<Ele
 
 // =============================== QUADRADURE RULES ==============================
 // ===============================================================================
-
 std::vector<QuadraturePoint> create2x2QuadratureRule() {
   // 2-point Gaussian quadrature positions and weights
   const double points[2] = {-1.0 / std::sqrt(3.0), 1.0 / std::sqrt(3.0)};
