@@ -6,8 +6,14 @@ The phase field method is a powerful tool for fracture analysis. However, it int
 Check out the sister code in Python on:
 [https://github.com/nathanshauer/phasefield-jr-py](https://github.com/nathanshauer/phasefield-jr-py)
 
+The preprint of the paper explaining the Python version is available at:
+[Link to paper preprint](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5293414)
+
 For more information about me or to get in touch, please visit my website:
 [www.nathanshauer.com](http://www.nathanshauer.com)
+
+Phasefield-jr has been extended to use an L-BFGS solver with line search and is available at:
+[https://github.com/gfemuillinois/BORAM](https://github.com/gfemuillinois/BORAM)
 
 ## Configuration
 
